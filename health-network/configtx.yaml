@@ -1,0 +1,232 @@
+
+Organizations:
+
+  - &OrdererOrg
+    Name: OrderingService
+    ID: OrdererMSP
+    MSPDir: crypto-config/ordererOrganizations/health-network.com/msp
+    
+    Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('OrdererMSP.admin')"
+
+    OrdererEndpoints:
+            - orderer.health-network.com:7050
+
+  - &HealthMinistry
+    Name: HealthMinistryMSP
+    ID: HealthMinistryMSP
+    MSPDir: crypto-config/peerOrganizations/HM.health-network.com/msp
+    Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('HealthMinistryMSP.admin', 'HealthMinistryMSP.peer', 'HealthMinistryMSP.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('HealthMinistryMSP.admin', 'HealthMinistryMSP.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('HealthMinistryMSP.admin')" 
+          Endorsement:
+              Type: Signature
+              Rule: "OR('HealthMinistryMSP.peer')"     
+
+    AnchorPeers:
+      - Host: peer0.HM.health-network.com
+        Port: 7051
+
+  - &FinanceMinistry
+    Name: FinanceMinistryMSP
+    ID: FinanceMinistryMSP
+    MSPDir: crypto-config/peerOrganizations/FM.health-network.com/msp
+    Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('FinanceMinistryMSP.admin', 'FinanceMinistryMSP.peer', 'FinanceMinistryMSP.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('FinanceMinistryMSP.admin', 'FinanceMinistryMSP.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('FinanceMinistryMSP.admin')" 
+          Endorsement:
+              Type: Signature
+              Rule: "OR('FinanceMinistryMSP.peer')" 
+
+    AnchorPeers:
+      - Host: peer0.FM.health-network.com
+        Port: 7051
+
+
+  - &EquipementMinistry
+    Name: EquipementMinistryMSP
+    ID: EquipementMinistryMSP
+    MSPDir: crypto-config/peerOrganizations/EM.health-network.com/msp
+    Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('EquipementMinistryMSP.admin', 'EquipementMinistryMSP.peer', 'EquipementMinistryMSP.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('EquipementMinistryMSP.admin', 'EquipementMinistryMSP.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('EquipementMinistryMSP.admin')" 
+          Endorsement:
+              Type: Signature
+              Rule: "OR('EquipementMinistryMSP.peer')" 
+
+    AnchorPeers:
+      - Host: peer0.EM.health-network.com
+        Port: 7051
+
+  - &Partners
+    Name: PartnersMSP
+    ID: PartnersMSP
+    MSPDir: crypto-config/peerOrganizations/P.health-network.com/msp
+    Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('PartnersMSP.admin', 'PartnersMSP.peer', 'PartnersMSP.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('PartnersMSP.admin', 'PartnersMSP.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('PartnersMSP.admin')" 
+          Endorsement:
+              Type: Signature
+              Rule: "OR('PartnersMSP.peer')" 
+
+    AnchorPeers:
+      - Host: peer0.P.health-network.com
+        Port: 7051
+
+
+
+Capabilities:
+
+    Channel: &ChannelCapabilities
+
+        V2_0: true
+
+
+    Orderer: &OrdererCapabilities
+    
+        V2_0: true
+
+    Application: &ApplicationCapabilities
+
+        V2_0: true
+# Orderer
+
+Orderer: &OrdererDefaults
+
+    OrdererType: solo
+    Addresses: 
+        - orderer.health-network.com:7050
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Kafka:
+        Brokers: 
+            - 127.0.0.1:9092
+
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+Channel: &ChannelDefaults
+
+    Policies:
+
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+
+    Capabilities:
+        <<: *ChannelCapabilities
+# Application
+
+Application: &ApplicationDefaults
+
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        LifecycleEndorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+        Endorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Profiles:
+    OrdererGenesis:
+      <<: *ChannelDefaults
+      Capabilities:
+        <<: *ChannelCapabilities
+      Orderer:
+        <<: *OrdererDefaults
+        Organizations:
+          - *OrdererOrg
+        Capabilities:
+          <<: *OrdererCapabilities
+      Consortiums:
+        MyFirstConsortium:
+          Organizations:
+            - *HealthMinistry 
+            - *FinanceMinistry
+            - *EquipementMinistry 
+            - *Partners
+            
+            
+    ChannelDemo:
+      Consortium: MyFirstConsortium
+      <<: *ChannelDefaults
+      Application:
+        <<: *ApplicationDefaults
+        Organizations:
+            - *HealthMinistry 
+            - *FinanceMinistry
+            - *EquipementMinistry 
+            - *Partners        
+        Capabilities:
+          <<: *ApplicationCapabilities

@@ -1,0 +1,112 @@
+
+version: '2'
+
+services:
+
+  orderer.health-network.com:
+    container_name: orderer.health-network.com
+    image: hyperledger/fabric-orderer
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/opt/gopath/fabric-samples/health-network/channel-artifacts/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+    - ../channel-artifacts/genesis.block:/opt/gopath/fabric-samples/health-network/channel-artifacts/genesis.block
+    - ../crypto-config/ordererOrganizations/health-network.com/orderers/orderer.health-network.com/msp:/var/hyperledger/orderer/msp
+    - ../crypto-config/ordererOrganizations/health-network.com/orderers/orderer.health-network.com/tls/:/var/hyperledger/orderer/tls
+    - orderer.health-network.com:/var/hyperledger/production/orderer
+    ports:
+      - 7050:7050
+#health
+  peer0.HM.health-network.com:
+    container_name: peer0.HM.health-network.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - GODEBUG=netdns=go
+      - CORE_PEER_ID=peer0.HM.health-network.com
+      - CORE_PEER_ADDRESS=peer0.HM.health-network.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.HM.health-network.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.HM.health-network.com:7051
+      - CORE_PEER_LOCALMSPID=HealthMinistryMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.HM.health-network.com:/var/hyperledger/production
+    ports:
+      - 7051:7051
+  
+#finance
+  peer0.FM.health-network.com:
+    container_name: peer0.FM.health-network.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - GODEBUG=netdns=go
+      - CORE_PEER_ID=peer0.FM.health-network.com
+      - CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.FM.health-network.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.FM.health-network.com:7051
+      - CORE_PEER_LOCALMSPID=FinanceMinistryMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.FM.health-network.com:/var/hyperledger/production
+    ports:
+      - 8051:7051
+
+#Equipment
+  peer0.EM.health-network.com:
+    container_name: peer0.EM.health-network.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - GODEBUG=netdns=go
+      - CORE_PEER_ID=peer0.EM.health-network.com
+      - CORE_PEER_ADDRESS=peer0.EM.health-network.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.EM.health-network.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.EM.health-network.com:7051
+      - CORE_PEER_LOCALMSPID=EquipementMinistryMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/EM.health-network.com/peers/peer0.EM.health-network.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/EM.health-network.com/peers/peer0.EM.health-network.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.EM.health-network.com:/var/hyperledger/production
+    ports:
+      - 9051:7051
+
+#partners
+  peer0.P.health-network.com:
+    container_name: peer0.P.health-network.com
+    extends:
+      file: peer-base.yaml
+      service: peer-base
+    environment:
+      - GODEBUG=netdns=go
+      - CORE_PEER_ID=peer0.P.health-network.com
+      - CORE_PEER_ADDRESS=peer0.P.health-network.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.P.health-network.com:7051
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer0.P.health-network.com:7051
+      - CORE_PEER_LOCALMSPID=PartnersMSP
+    volumes:
+        - /var/run/:/host/var/run/
+        - ../crypto-config/peerOrganizations/P.health-network.com/peers/peer0.P.health-network.com/msp:/etc/hyperledger/fabric/msp
+        - ../crypto-config/peerOrganizations/P.health-network.com/peers/peer0.P.health-network.com/tls:/etc/hyperledger/fabric/tls
+        - peer0.P.health-network.com:/var/hyperledger/production
+    ports:
+      - 10051:7051
