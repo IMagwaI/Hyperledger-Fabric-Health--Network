@@ -19,7 +19,7 @@ class Health extends Contract {
         await ctx.stub.putState(key,value)
         return value
     }
-    async writeData(ctx,key) {
+    async readData(ctx,key) {
         var response=await ctx.stub.putState(key)
         return response.toString()
     }

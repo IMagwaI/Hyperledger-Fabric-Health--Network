@@ -5,7 +5,7 @@ services:
 
   orderer.health-network.com:
     container_name: orderer.health-network.com
-    image: hyperledger/fabric-orderer
+    image: hyperledger/fabric-orderer:x86_64-1.0.0
     environment:
       - ORDERER_GENERAL_LOGLEVEL=INFO
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
