@@ -83,7 +83,7 @@ services:
         - ./crypto-config:/opt/gopath/fabric-samples/health-network/crypto-config/
         - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
         - ./channel-artifacts:/opt/gopath/fabric-samples/health-network/channel-artifacts
-        - ./application:/opt/gopath/fabric-samples/health-network/application
+        - ./../application:/opt/gopath/fabric-samples/health-network/application
         
 
     depends_on:
