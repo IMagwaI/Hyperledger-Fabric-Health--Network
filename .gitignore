@@ -19,3 +19,10 @@ node_modules/
 # Ignore Gradle build output directory
 build
 package-lock.json
+Cookies
+Cookies-journal
+logs
+Cache
+CachedData
+CachedExtensions
+CachedExtensionsVSIXs

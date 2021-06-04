@@ -18,14 +18,14 @@ setGlobalsForPeer0HM(){
     export CORE_PEER_LOCALMSPID="HealthMinistryMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_HM_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/../health-network/crypto-config/peerOrganizations/HM.health-network.com/users/Admin@HM.health-network.com/msp
-    export CORE_PEER_ADDRESS=localhost:7051
+    export CORE_PEER_ADDRESS=peer0.HM.health-network.com:7051
 }
 
 setGlobalsForPeer0FM(){
     export CORE_PEER_LOCALMSPID="FinanceMinistryMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_FM_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/../health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp
-    export CORE_PEER_ADDRESS=localhost:8051
+    export CORE_PEER_ADDRESS=peer0.FM.health-network.com:8051
     
 }
 
@@ -33,7 +33,7 @@ setGlobalsForPeer0EM(){
     export CORE_PEER_LOCALMSPID="EquipementMinistryMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_EM_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/../health-network/crypto-config/peerOrganizations/EM.health-network.com/users/Admin@EM.health-network.com/msp
-    export CORE_PEER_ADDRESS=localhost:9051
+    export CORE_PEER_ADDRESS=peer0.EM.health-network.com:9051
     
 }
 
@@ -41,19 +41,19 @@ setGlobalsForPeer0P(){
     export CORE_PEER_LOCALMSPID="PartnersMSP"
     export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_P_CA
     export CORE_PEER_MSPCONFIGPATH=${PWD}/../health-network/crypto-config/peerOrganizations/P.health-network.com/users/Admin@P.health-network.com/msp
-    export CORE_PEER_ADDRESS=localhost:10051
+    export CORE_PEER_ADDRESS=peer0.P.health-network.com:10051
     
 }
 
 createChannel(){
-    rm -rf ./../health-network/channel-artifacts/*
+    #rm -rf ./../health-network/channel-artifacts/*
     #setGlobalsForOrderer
     setGlobalsForPeer0HM
 
     pwd
 
     peer channel create -o localhost:7050 -c $CHANNEL_NAME \
-    --ordererTLSHostnameOverride orderer.example.com \
+    --ordererTLSHostnameOverride orderer.health-network.com \
     -f ../health-network/channel-artifacts/${CHANNEL_NAME}.tx --outputBlock ./../health-network/channel-artifacts/${CHANNEL_NAME}.block \
     --tls  --cafile $ORDERER_CA
 }

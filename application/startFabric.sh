@@ -5,7 +5,7 @@ export PATH=${PWD}/../bin:${PWD}:$PATH
 docker-compose -f ../health-network/docker-compose-cli.yaml  up -d
 
 sleep 5
-docker exec -it cli sh
+#docker exec -it cli sh
 sleep 2
 ./createChannel.sh
 
