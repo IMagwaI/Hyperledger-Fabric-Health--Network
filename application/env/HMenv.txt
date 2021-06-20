@@ -1,0 +1,4 @@
+"CORE_PEER_LOCALMSPID=HealthMinistryMSP"
+"CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/tls/ca.crt"
+"CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/users/Admin@HM.health-network.com/msp"
+"CORE_PEER_ADDRESS=peer0.HM.health-network.com:7051"

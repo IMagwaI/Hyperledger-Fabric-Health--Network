@@ -1,0 +1,4 @@
+"CORE_PEER_LOCALMSPID=PartnersMSP"
+"CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/P.health-network.com/peers/peer0.P.health-network.com/tls/ca.crt"
+"CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/P.health-network.com/users/Admin@P.health-network.com/msp"
+"CORE_PEER_ADDRESS=peer0.P.health-network.com:10051"

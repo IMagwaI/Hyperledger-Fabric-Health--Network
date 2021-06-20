@@ -1,0 +1,42 @@
+OrdererOrgs:
+  - Name: OrderingService
+    Domain: health-network.com
+    Specs:
+      - Hostname: orderer
+
+PeerOrgs:
+  - Name: HealthMinistry
+    Domain: HM.health-network.com
+    EnableNodeOUs: true
+    Template:
+      Count: 2
+
+    Users: 
+      Count: 1
+      
+  - Name: FinanceMinistry
+    Domain: FM.health-network.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+
+    Users: 
+      Count: 1
+
+  - Name: EquipementMinistry
+    Domain: EM.health-network.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+
+    Users: 
+      Count: 1
+
+  - Name: Partners
+    Domain: P.health-network.com
+    EnableNodeOUs: true
+    Template:
+      Count: 1
+
+    Users: 
+      Count: 1

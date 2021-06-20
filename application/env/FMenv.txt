@@ -1,0 +1,4 @@
+"CORE_PEER_LOCALMSPID=FinanceMinistryMSP"
+"CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt"
+"CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp"
+"CORE_PEER_ADDRESS=peer0.FM.health-network.com:8051"
