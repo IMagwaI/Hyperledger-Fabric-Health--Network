@@ -42,12 +42,12 @@ installChaincode() {
     echo "===================== Chaincode is installed on peer0.HM ===================== "
 
 
-    docker exec -e "CORE_PEER_LOCALMSPID=HealthMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/users/Admin@HM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.HM.health-network.com:7051"  -it cli  bash -c \
+    docker exec -e "CORE_PEER_LOCALMSPID=EquipementMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/EM.health-network.com/peers/peer0.EM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/EM.health-network.com/users/Admin@EM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.EM.health-network.com:7051"  cli  /bin/sh -c \
     "peer lifecycle chaincode install healthF.tar.gz;exit" 
     echo "===================== Chaincode is installed on peer0.EM ===================== "
 
 
-    docker exec -e "CORE_PEER_LOCALMSPID=HealthMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/users/Admin@HM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.HM.health-network.com:7051"  -it cli  bash -c \
+    docker exec  -e "CORE_PEER_LOCALMSPID=PartnersMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/P.health-network.com/peers/peer0.P.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/P.health-network.com/users/Admin@P.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.P.health-network.com:7051" cli  /bin/sh -c \
     "peer lifecycle chaincode install healthF.tar.gz;exit" 
     echo "===================== Chaincode is installed on peer0.P ===================== "
 
@@ -160,8 +160,8 @@ commitChaincodeDefination() {
 
 
 queryCommitted() {
-    setGlobalsForPeer0Org1
-    peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME}
+    docker exec  -e "CORE_PEER_LOCALMSPID=FinanceMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051" -it cli  bash -c \
+    "peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME}; exit"
 
 }
 
@@ -258,7 +258,7 @@ checkCommitReadyness
 #approveForMyOrg2
 #checkCommitReadyness
 commitChaincodeDefination
-#queryCommitted
+queryCommitted
 #chaincodeInvokeInit
 #sleep 5
 #chaincodeInvoke
