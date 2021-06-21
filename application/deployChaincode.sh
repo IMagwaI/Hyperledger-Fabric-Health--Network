@@ -1,20 +1,22 @@
 export CORE_PEER_TLS_ENABLED=true
-export ORDERER_CA=${PWD}/../health-network/crypto-config/ordererOrganizations/health-network.com/orderers/orderer.health-network.com/msp/tlscacerts/tlsca.health-network.com-cert.pem
-export PEER0_HM_CA=${PWD}/../health-network/crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/tls/ca.crt
-export PEER0_FM_CA=${PWD}/../health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt
-export PEER0_EM_CA=${PWD}/../health-network/crypto-config/peerOrganizations/EM.health-network.com/peers/peer0.EM.health-network.com/tls/ca.crt
-export PEER0_P_CA=${PWD}/../health-network/crypto-config/peerOrganizations/P.health-network.com/peers/peer0.P.health-network.com/tls/ca.crt
+export ORDERER_CA=/opt/gopath/fabric-samples/health-network/crypto-config/ordererOrganizations/health-network.com/orderers/orderer.health-network.com/msp/tlscacerts/tlsca.health-network.com-cert.pem
+export PEER0_HM_CA=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/tls/ca.crt
+export PEER0_FM_CA=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt
+export PEER0_EM_CA=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/EM.health-network.com/peers/peer0.EM.health-network.com/tls/ca.crt
+export PEER0_P_CA=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/P.health-network.com/peers/peer0.P.health-network.com/tls/ca.crt
 
-export FABRIC_CFG_PATH=${PWD}/../config/
+export FABRIC_CFG_PATH=${PWD}/../health-network/
 export CHANNEL_NAME=mychannel
+export PRIVATE_DATA_CONFIG=/opt/gopath/fabric-samples/health-network/config/collections_config.json
 
 
 
-CHANNEL_NAME="mychannel"
-CC_RUNTIME_LANGUAGE="node"
-VERSION="1"
-CC_SRC_PATH="./finance-ministry/contract"
-CC_NAME="healthF"
+
+export CHANNEL_NAME="mychannel"
+export CC_RUNTIME_LANGUAGE="node"
+export VERSION="1"
+export CC_SRC_PATH="../health-network/chaincode/javascript"
+export CC_NAME="healthF"
 
 packageChaincode() {
     rm -rf ${CC_NAME}.tar.gz
@@ -40,6 +42,15 @@ installChaincode() {
     echo "===================== Chaincode is installed on peer0.HM ===================== "
 
 
+    docker exec -e "CORE_PEER_LOCALMSPID=HealthMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/users/Admin@HM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.HM.health-network.com:7051"  -it cli  bash -c \
+    "peer lifecycle chaincode install healthF.tar.gz;exit" 
+    echo "===================== Chaincode is installed on peer0.EM ===================== "
+
+
+    docker exec -e "CORE_PEER_LOCALMSPID=HealthMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/users/Admin@HM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.HM.health-network.com:7051"  -it cli  bash -c \
+    "peer lifecycle chaincode install healthF.tar.gz;exit" 
+    echo "===================== Chaincode is installed on peer0.P ===================== "
+
 
 }
 
@@ -47,10 +58,10 @@ installChaincode() {
 queryInstalled() {
     
     docker exec  -e "CORE_PEER_LOCALMSPID=FinanceMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051" -it cli  bash -c \
-    "peer lifecycle chaincode queryinstalled > log.txt ;cat log.txt; exit"    
-
-    #PACKAGE_ID=$(sed -n "/${CC_NAME}_${VERSION}/{s/^Package ID: //; s/, Label:.*$//; p;}" log.txt)
-    #echo PackageID is ${PACKAGE_ID}
+    "peer lifecycle chaincode queryinstalled" > log.txt     
+    cat log.txt
+    PACKAGE_ID=$(sed -n "/${CC_NAME}_${VERSION}/{s/^Package ID: //; s/, Label:.*$//; p;}" log.txt)
+    echo PackageID is ${PACKAGE_ID}
     echo "===================== Query installed successful on peer0.FM on channel ===================== "
 }
 
@@ -60,95 +71,93 @@ queryInstalled() {
 #         --signature-policy "OR('Org1MSP.member','Org2MSP.member')" \
 # --collections-config $PRIVATE_DATA_CONFIG \
 
-approveForMyOrg1() {
-    setGlobalsForPeer0Org1
-    # set -x
-    peer lifecycle chaincode approveformyorg -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com --tls \
+approveForFM() {
+    docker exec  -e "CORE_PEER_LOCALMSPID=FinanceMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051" -it cli  bash -c \
+    "peer lifecycle chaincode approveformyorg -o orderer.health-network.com:7050 \
+        --ordererTLSHostnameOverride orderer.health-network.com --tls \
         --collections-config $PRIVATE_DATA_CONFIG \
         --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
         --init-required --package-id ${PACKAGE_ID} \
-        --sequence ${VERSION}
+        --sequence ${VERSION}; exit"    
+    
     # set +x
 
-    echo "===================== chaincode approved from org 1 ===================== "
+    echo "===================== chaincode approved from FM ===================== "
 
 }
 
-getBlock() {
-    setGlobalsForPeer0Org1
-    # peer channel fetch 10 -c mychannel -o localhost:7050 \
-    #     --ordererTLSHostnameOverride orderer.example.com --tls \
-    #     --cafile $ORDERER_CA
+approveForHM() {
+    docker exec -e "CORE_PEER_LOCALMSPID=HealthMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/users/Admin@HM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.HM.health-network.com:7051"  -it cli  bash -c \
+    "peer lifecycle chaincode approveformyorg -o orderer.health-network.com:7050 \
+        --ordererTLSHostnameOverride orderer.health-network.com --tls \
+        --collections-config $PRIVATE_DATA_CONFIG \
+        --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
+        --init-required --package-id ${PACKAGE_ID} \
+        --sequence ${VERSION}; exit"    
+    
+    # set +x
 
-    peer channel getinfo  -c mychannel -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com --tls \
-        --cafile $ORDERER_CA
+    echo "===================== chaincode approved from HM ===================== "
+
 }
 
-# getBlock
+approveForEM() {
+    docker exec -e "CORE_PEER_LOCALMSPID=EquipementMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/EM.health-network.com/peers/peer0.EM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/EM.health-network.com/users/Admin@EM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.EM.health-network.com:7051"  cli  /bin/sh -c \
+    "peer lifecycle chaincode approveformyorg -o orderer.health-network.com:7050 \
+        --ordererTLSHostnameOverride orderer.health-network.com --tls \
+        --collections-config $PRIVATE_DATA_CONFIG \
+        --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
+        --init-required --package-id ${PACKAGE_ID} \
+        --sequence ${VERSION}; exit"    
+    
+    # set +x
 
-# approveForMyOrg1
+    echo "===================== chaincode approved from EM ===================== "
 
-# --signature-policy "OR ('Org1MSP.member')"
-# --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA
-# --peerAddresses peer0.org1.example.com:7051 --tlsRootCertFiles $PEER0_ORG1_CA --peerAddresses peer0.org2.example.com:9051 --tlsRootCertFiles $PEER0_ORG2_CA
-#--channel-config-policy Channel/Application/Admins
-# --signature-policy "OR ('Org1MSP.peer','Org2MSP.peer')"
+}
+approveForP() {
+    docker exec  -e "CORE_PEER_LOCALMSPID=PartnersMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/P.health-network.com/peers/peer0.P.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/P.health-network.com/users/Admin@P.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.P.health-network.com:7051" cli  /bin/sh -c \
+    "peer lifecycle chaincode approveformyorg -o orderer.health-network.com:7050 \
+        --ordererTLSHostnameOverride orderer.health-network.com --tls \
+        --collections-config $PRIVATE_DATA_CONFIG \
+        --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
+        --init-required --package-id ${PACKAGE_ID} \
+        --sequence ${VERSION}; exit"    
+    
+    # set +x
+
+    echo "===================== chaincode approved from P ===================== "
+
+}
+
 
 checkCommitReadyness() {
-    setGlobalsForPeer0Org1
-    peer lifecycle chaincode checkcommitreadiness \
+    docker exec  -e "CORE_PEER_LOCALMSPID=FinanceMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051" -it cli  bash -c \
+    "peer lifecycle chaincode checkcommitreadiness \
         --collections-config $PRIVATE_DATA_CONFIG \
         --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${VERSION} \
-        --sequence ${VERSION} --output json --init-required
-    echo "===================== checking commit readyness from org 1 ===================== "
+        --sequence ${VERSION} --output json --init-required ; exit"
+    
+    echo "===================== checking commit readyness  ===================== "
 }
 
-# checkCommitReadyness
 
-# --collections-config ./artifacts/private-data/collections_config.json \
-# --signature-policy "OR('Org1MSP.member','Org2MSP.member')" \
-approveForMyOrg2() {
-    setGlobalsForPeer0Org2
 
-    peer lifecycle chaincode approveformyorg -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com --tls $CORE_PEER_TLS_ENABLED \
-        --cafile $ORDERER_CA --channelID $CHANNEL_NAME --name ${CC_NAME} \
-        --collections-config $PRIVATE_DATA_CONFIG \
-        --version ${VERSION} --init-required --package-id ${PACKAGE_ID} \
-        --sequence ${VERSION}
-
-    echo "===================== chaincode approved from org 2 ===================== "
-}
-
-# approveForMyOrg2
-
-checkCommitReadyness() {
-
-    setGlobalsForPeer0Org1
-    peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-        --collections-config $PRIVATE_DATA_CONFIG \
-        --name ${CC_NAME} --version ${VERSION} --sequence ${VERSION} --output json --init-required
-    echo "===================== checking commit readyness from org 1 ===================== "
-}
-
-# checkCommitReadyness
 
 commitChaincodeDefination() {
-    setGlobalsForPeer0Org1
-    peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
+    docker exec  -e "CORE_PEER_LOCALMSPID=FinanceMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051" -it cli  bash -c \
+    "peer lifecycle chaincode commit -o orderer.health-network.com:7050 --ordererTLSHostnameOverride orderer.health-network.com \
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
         --channelID $CHANNEL_NAME --name ${CC_NAME} \
         --collections-config $PRIVATE_DATA_CONFIG \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        --version ${VERSION} --sequence ${VERSION} --init-required
-
+        --peerAddresses peer0.HM.health-network.com:7051 --tlsRootCertFiles $PEER0_HM_CA \
+        --peerAddresses peer0.FM.health-network.com:7051 --tlsRootCertFiles $PEER0_FM_CA \
+        --peerAddresses peer0.EM.health-network.com:7051 --tlsRootCertFiles $PEER0_EM_CA \
+        --peerAddresses peer0.P.health-network.com:7051 --tlsRootCertFiles $PEER0_P_CA \
+        --version ${VERSION} --sequence ${VERSION} --init-required; exit"
+    
 }
 
-# commitChaincodeDefination
 
 queryCommitted() {
     setGlobalsForPeer0Org1
@@ -241,11 +250,14 @@ chaincodeQuery() {
 packageChaincode
 installChaincode
 queryInstalled
-#approveForMyOrg1
-#checkCommitReadyness
+approveForFM
+approveForHM
+approveForEM
+approveForP
+checkCommitReadyness
 #approveForMyOrg2
 #checkCommitReadyness
-#commitChaincodeDefination
+commitChaincodeDefination
 #queryCommitted
 #chaincodeInvokeInit
 #sleep 5
