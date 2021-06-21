@@ -6,4 +6,4 @@
 #
 # Exit on first error
 docker-compose -f ../health-network/docker-compose-cli.yaml down
-#docker volume prune 
+docker  volume  prune --force
