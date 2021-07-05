@@ -1,0 +1,2 @@
+Installed chaincodes on peer:
+Package ID: healthF_1:28df5471aadf89a84690da9bf4fb3b9a5730812a9cde3e771f1f27acb59e12ff, Label: healthF_1

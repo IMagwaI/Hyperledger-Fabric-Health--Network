@@ -23,7 +23,7 @@ packageChaincode() {
     
     docker exec  -e "CORE_PEER_LOCALMSPID=FinanceMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051" -it cli  bash -c \
     "peer lifecycle chaincode package healthF.tar.gz \
-        --path /opt/gopath/fabric-samples/health-network/application/finance-ministry/contract --lang node \
+        --path /opt/gopath/fabric-samples/health-network/chaincode/javascript/ --lang node \
         --label healthF_1 ;exit"    
 
     
@@ -59,10 +59,34 @@ queryInstalled() {
     
     docker exec  -e "CORE_PEER_LOCALMSPID=FinanceMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051" -it cli  bash -c \
     "peer lifecycle chaincode queryinstalled" > log.txt     
-    cat log.txt
     PACKAGE_ID=$(sed -n "/${CC_NAME}_${VERSION}/{s/^Package ID: //; s/, Label:.*$//; p;}" log.txt)
     echo PackageID is ${PACKAGE_ID}
     echo "===================== Query installed successful on peer0.FM on channel ===================== "
+
+        
+    # docker exec -e "CORE_PEER_LOCALMSPID=HealthMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/users/Admin@HM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.HM.health-network.com:7051"  -it cli  bash -c \
+    # "peer lifecycle chaincode queryinstalled" > logHM.txt     
+    # PACKAGE_ID_HM=$(sed -n "/${CC_NAME}_${VERSION}/{s/^Package ID: //; s/, Label:.*$//; p;}" logHM.txt)
+    # echo PackageID_HM is ${PACKAGE_ID_HM}
+    # echo "===================== Query installed successful on peer0.HM on channel ===================== "
+
+    
+    # docker exec -e "CORE_PEER_LOCALMSPID=EquipementMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/EM.health-network.com/peers/peer0.EM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/EM.health-network.com/users/Admin@EM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.EM.health-network.com:7051"  cli  /bin/sh -c \
+    # "peer lifecycle chaincode queryinstalled" > logEM.txt     
+    # PACKAGE_ID_EM=$(sed -n "/${CC_NAME}_${VERSION}/{s/^Package ID: //; s/, Label:.*$//; p;}" logEM.txt)
+    # echo PackageID_EM is ${PACKAGE_ID_EM}
+    # echo "===================== Query installed successful on peer0.EM on channel ===================== "
+
+    
+    # docker exec  -e "CORE_PEER_LOCALMSPID=PartnersMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/P.health-network.com/peers/peer0.P.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/P.health-network.com/users/Admin@P.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.P.health-network.com:7051" cli  /bin/sh -c \
+    # "peer lifecycle chaincode queryinstalled" > logP.txt     
+    # PACKAGE_ID_P=$(sed -n "/${CC_NAME}_${VERSION}/{s/^Package ID: //; s/, Label:.*$//; p;}" logP.txt)
+    # echo PackageID_P is ${PACKAGE_ID_P}
+    # echo "===================== Query installed successful on peer0.P on channel ===================== "
+
+
+
+
 }
 
 # queryInstalled
@@ -148,13 +172,16 @@ commitChaincodeDefination() {
     docker exec  -e "CORE_PEER_LOCALMSPID=FinanceMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051" -it cli  bash -c \
     "peer lifecycle chaincode commit -o orderer.health-network.com:7050 --ordererTLSHostnameOverride orderer.health-network.com \
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
-        --channelID $CHANNEL_NAME --name ${CC_NAME} \
         --collections-config $PRIVATE_DATA_CONFIG \
+        --channelID $CHANNEL_NAME --name ${CC_NAME} \
         --peerAddresses peer0.HM.health-network.com:7051 --tlsRootCertFiles $PEER0_HM_CA \
         --peerAddresses peer0.FM.health-network.com:7051 --tlsRootCertFiles $PEER0_FM_CA \
         --peerAddresses peer0.EM.health-network.com:7051 --tlsRootCertFiles $PEER0_EM_CA \
         --peerAddresses peer0.P.health-network.com:7051 --tlsRootCertFiles $PEER0_P_CA \
         --version ${VERSION} --sequence ${VERSION} --init-required; exit"
+
+    echo "===================== chaincode commited  ===================== "
+
     
 }
 
@@ -162,34 +189,47 @@ commitChaincodeDefination() {
 queryCommitted() {
     docker exec  -e "CORE_PEER_LOCALMSPID=FinanceMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051" -it cli  bash -c \
     "peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME}; exit"
+    
+    echo "===================== query commited  ===================== "
 
 }
 
 # queryCommitted
 
 chaincodeInvokeInit() {
-    setGlobalsForPeer0Org1
-    peer chaincode invoke -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com \
+
+    export myvar='{\"Args\":[\"initLedger\"]}'
+    
+    docker exec  -e "CORE_PEER_LOCALMSPID=FinanceMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051" -it cli  bash -c \
+    "peer chaincode invoke -o orderer.health-network.com:7050 \
+        --ordererTLSHostnameOverride orderer.health-network.com \
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
         -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        --isInit -c '{"Args":[]}'
+        --peerAddresses peer0.HM.health-network.com:7051 --tlsRootCertFiles $PEER0_HM_CA \
+        --peerAddresses peer0.FM.health-network.com:7051 --tlsRootCertFiles $PEER0_FM_CA \
+        --peerAddresses peer0.EM.health-network.com:7051 --tlsRootCertFiles $PEER0_EM_CA \
+        --peerAddresses peer0.P.health-network.com:7051 --tlsRootCertFiles $PEER0_P_CA \
+        --isInit -c $myvar "
+
+    echo "===================== invoke init  ===================== "
 
 }
 
 # chaincodeInvokeInit
 
 chaincodeInvoke() {
-    # setGlobalsForPeer0Org1
-    # peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
-    # --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} \
-    # --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-    # --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA  \
-    # -c '{"function":"initLedger","Args":[]}'
+    #export invokevar='{\"Args\":[\"readData\",\"test\"]}'
 
-    setGlobalsForPeer0Org1
+    export invokevar='{\"Args\":[\"readData\"]}'
+
+    #export invokevar='{\"function\":\"readData\",\"Args\":[\"test\"]}'
+
+    docker exec  -e "CORE_PEER_LOCALMSPID=FinanceMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/peers/peer0.FM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/FM.health-network.com/users/Admin@FM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.FM.health-network.com:7051" -it cli  bash -c \
+    "peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c $invokevar \
+        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA >> res.txt; cat res.txt"
+    echo "===================== invoke var  ===================== "
+
+#peer chaincode query -C mychannel -n healthF -c  '{"function":"readData", "Args": ["{\"key\":\"test\"}"]}' --tls true --cafile /opt/gopath/fabric-samples/health-network/crypto-config/ordererOrganizations/health-network.com/orderers/orderer.health-network.com/msp/tlscacerts/tlsca.health-network.com-cert.pem
 
     ## Create Car
     # peer chaincode invoke -o localhost:7050 \
@@ -203,26 +243,26 @@ chaincodeInvoke() {
     #     -c '{"function": "createCar","Args":["Car-ABCDEEE", "Audi", "R8", "Red", "Pavan"]}'
 
     ## Init ledger
-    peer chaincode invoke -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com \
-        --tls $CORE_PEER_TLS_ENABLED \
-        --cafile $ORDERER_CA \
-        -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        -c '{"function": "initLedger","Args":[]}'
+    # peer chaincode invoke -o localhost:7050 \
+    #     --ordererTLSHostnameOverride orderer.example.com \
+    #     --tls $CORE_PEER_TLS_ENABLED \
+    #     --cafile $ORDERER_CA \
+    #     -C $CHANNEL_NAME -n ${CC_NAME} \
+    #     --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+    #     --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
+    #     -c '{"function": "initLedger","Args":[]}'
 
-    ## Add private data
-    export CAR=$(echo -n "{\"key\":\"1111\", \"make\":\"Tesla\",\"model\":\"Tesla A1\",\"color\":\"White\",\"owner\":\"pavan\",\"price\":\"10000\"}" | base64 | tr -d \\n)
-    peer chaincode invoke -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com \
-        --tls $CORE_PEER_TLS_ENABLED \
-        --cafile $ORDERER_CA \
-        -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        -c '{"function": "createPrivateCar", "Args":[]}' \
-        --transient "{\"car\":\"$CAR\"}"
+    # ## Add private data
+    # export CAR=$(echo -n "{\"key\":\"1111\", \"make\":\"Tesla\",\"model\":\"Tesla A1\",\"color\":\"White\",\"owner\":\"pavan\",\"price\":\"10000\"}" | base64 | tr -d \\n)
+    # peer chaincode invoke -o localhost:7050 \
+    #     --ordererTLSHostnameOverride orderer.example.com \
+    #     --tls $CORE_PEER_TLS_ENABLED \
+    #     --cafile $ORDERER_CA \
+    #     -C $CHANNEL_NAME -n ${CC_NAME} \
+    #     --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+    #     --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
+    #     -c '{"function": "createPrivateCar", "Args":[]}' \
+    #     --transient "{\"car\":\"$CAR\"}"
 }
 
 # chaincodeInvoke
@@ -255,12 +295,11 @@ approveForHM
 approveForEM
 approveForP
 checkCommitReadyness
-#approveForMyOrg2
-#checkCommitReadyness
 commitChaincodeDefination
 queryCommitted
-#chaincodeInvokeInit
-#sleep 5
-#chaincodeInvoke
+
+chaincodeInvokeInit
+sleep 5
+chaincodeInvoke
 #sleep 3
 #chaincodeQuery
