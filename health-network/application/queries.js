@@ -5,7 +5,7 @@
 */
 'use strict';
 
-const State = require('../ledger-api/state.js');
+const State = require('./ledger-api/state.js');
 //const Projet = require('./paper.js');
 /**
  * Query Class for query functions such as history etc
@@ -57,7 +57,7 @@ class QueryUtils {
             throw new Error('Incorrect number of arguments. Expecting 1');
         }
         // ie namespace + prefix to assets etc eg 
-        // "Key":"org.papernet.paperMagnetoCorp0001"   (0002, etc)
+        // "Key":"org.healthnet.ProjectMagnetoCorp0001"   (0002, etc)
         // "Partial":'org.papernet.ProjectListMagnetoCorp"'  (using partial key, find keys "0001", "0002" etc)
         const resultsIterator = await this.ctx.stub.getStateByPartialCompositeKey(this.name, [assetspace]);
         let method = this.getAllResults;

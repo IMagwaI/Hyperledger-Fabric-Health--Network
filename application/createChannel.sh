@@ -11,15 +11,11 @@ export CHANNEL_NAME=mychannel
 
 createChannel(){
 
-
-
     docker exec -e "CORE_PEER_LOCALMSPID=HealthMinistryMSP" -e "CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/peers/peer0.HM.health-network.com/tls/ca.crt" -e "CORE_PEER_MSPCONFIGPATH=/opt/gopath/fabric-samples/health-network/crypto-config/peerOrganizations/HM.health-network.com/users/Admin@HM.health-network.com/msp" -e "CORE_PEER_ADDRESS=peer0.HM.health-network.com:7051"  -it cli  bash -c \
     "peer channel create -o orderer.health-network.com:7050 -c mychannel -f /opt/gopath/fabric-samples/health-network/channel-artifacts/channel.tx --tls --cafile $ORDERER_CA;peer channel join -b $CHANNEL_NAME.block --tls --cafile $ORDERER_CA;peer channel list;exit" 
 
 
-
     echo "===================== created ====================="
-
 }
 
 

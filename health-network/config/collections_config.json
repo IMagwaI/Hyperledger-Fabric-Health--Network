@@ -1,0 +1,23 @@
+[
+    {
+         "name": "collection",
+         "policy": "OR('FinanceMinistryMSP.member', 'HealthMinistryMSP.member','EquipementMinistryMSP.member', 'PartnersMSP.member')",
+         "requiredPeerCount": 0,
+         "maxPeerCount": 5,
+         "blockToLive": 1000000,
+         "memberOnlyRead": true,
+         "memberOnlyWrite": true
+    },
+    {
+         "name": "collectionPrivateDetails",
+         "policy": "OR('FinanceMinistryMSP.member')",
+         "requiredPeerCount": 0,
+         "maxPeerCount": 5,
+         "blockToLive": 5,
+         "memberOnlyRead": true,
+         "memberOnlyWrite": true,
+         "endorsementPolicy": {
+              "signaturePolicy": "OR('FinanceMinistryMSP.member')"
+         }
+    }
+]

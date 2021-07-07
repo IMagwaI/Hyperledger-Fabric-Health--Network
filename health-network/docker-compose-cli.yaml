@@ -85,6 +85,9 @@ services:
         - ./scripts:/opt/gopath/src/github.com/hyperledger/fabric/peer/scripts/
         - ./channel-artifacts:/opt/gopath/fabric-samples/health-network/channel-artifacts
         - ./application:/opt/gopath/fabric-samples/health-network/application
+        - ./chaincode:/opt/gopath/fabric-samples/health-network/chaincode
+        - ./config:/opt/gopath/fabric-samples/health-network/config
+        
         
 
     depends_on:

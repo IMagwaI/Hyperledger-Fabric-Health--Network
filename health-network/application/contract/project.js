@@ -2,11 +2,11 @@
 'use strict';
 
 // Utility class for ledger state
-const State = require('../ledger-api/state.js.js.js.js');
+const State = require('../ledger-api/state.js');
 
 // Enumerate projet paper state values
 const pState = {
-    P_IDENTIFIED: 1,
+    ISSUED: 1,
     HM_STUDIED: 2,
     HM_IDENTIFIED: 3,
     P_VALIDATED: 4,
@@ -33,11 +33,14 @@ class Projet extends State {
         return this.issuer;
     }
 
-    setIssuer(newIssuer) {
-        this.issuer = newIssuer;
+    getNumber() {
+        return this.Number;
     }
 
 
+    setIssuer(newIssuer) {
+        this.issuer = newIssuer;
+    }
 
     setIssuerMSP(mspid) {
         this.mspid = mspid;
@@ -47,14 +50,11 @@ class Projet extends State {
         return this.mspid;
     }
 
-
-
-    /**
-     * Useful methods to encapsulate commercial paper states
-     */
-    setP_IDENTIFIED() {
-        this.currentState = pState.P_IDENTIFIED;
+    setIssued() {
+        this.currentState = pState.ISSUED;
     }
+
+
     setHM_STUDIED() {
         this.currentState = pState.HM_STUDIED;
     }
@@ -74,33 +74,6 @@ class Projet extends State {
         this.currentState = pState.P_MONITORING;
     }
 
-    isP_IDENTIFIED() {
-        return this.currentState === pState.P_IDENTIFIED;
-    }
-
-    isHM_STUDIED() {
-        return this.currentState === pState.HM_STUDIED;
-    }
-
-    isHM_IDENTIFIED() {
-        return this.currentState === pState.HM_IDENTIFIED;
-    }
-
-    isP_VALIDATED() {
-        return this.currentState === pState.P_VALIDATED;
-    }
-
-    isHM_ESTIMATED() {
-        return this.currentState === pState.HM_ESTIMATED;
-    }
-  
-    isFM_STUDIED() {
-        return this.currentState === pState.FM_STUDIED;
-    }
-
-    isP_MONITORING() {
-        return this.currentState === pState.P_MONITORING;
-    }
 
 
     static fromBuffer(buffer) {
@@ -122,9 +95,11 @@ class Projet extends State {
     /**
      * Factory method to create a commercial paper object
      */
-    static createInstance(issuer, paperNumber, issueDateTime, maturityDateTime, faceValue) {
-        return new Projet({ issuer, paperNumber, issueDateTime, maturityDateTime, faceValue });
+    static createInstance(issuer, projectNumber) {
+        return new Projet({ issuer, projectNumber });
     }
+
+
 
     static getClass() {
         return 'org.healthnet.Projet';

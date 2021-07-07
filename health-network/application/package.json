@@ -1,8 +1,8 @@
 {
-    "name": "health",
+    "name": "projectcontract",
     "version": "1.0.0",
-    "description": "Health application implemented in JavaScript",
     "main": "index.js",
+    "description": "Health application implemented in JavaScript",
     "engines": {
         "node": ">=8",
         "npm": ">=5"
